@@ -53,7 +53,7 @@ if audio:
 command.extend("-f x11grab".split(" "))
 
 if "--output" in sys.argv:
-    output=int(sys.argv[sys.argv.index("--output")+1])
+    output=sys.argv[sys.argv.index("--output")+1]
 else:
     output = subprocess.Popen("zenity --file-selection --save --title".split(" ")+["Select final output name prefix"], stdout=subprocess.PIPE).communicate()[0].strip()
 
