@@ -1,0 +1,1 @@
+Simple way to record a screencast with ffmpeg, basically wraps http://verb3k.wordpress.com/2010/01/26/how-to-do-proper-screencasts-on-linux/ in a nice python script.
