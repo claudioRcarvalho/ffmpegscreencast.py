@@ -15,7 +15,7 @@ def searchpath(forbinary):
     return bool([True for i in os.environ["PATH"].split(":") if os.path.exists(os.path.join(i, forbinary))])
 
 if "--help" in sys.argv or "-h" in sys.argv:
-    print "usage:",sys.argv[0],"[--audio|--noaudio] [--display <X display>] [--fps <rate>] [--window|--fullscr] [--output <savelocation>]"
+    print "usage:",sys.argv[0],"[--audio|--noaudio] [--display <X display>] [--fps <rate>] [--window|--fullscr] [--output <savelocation>] [--temp <location>]"
     
 if not searchpath("ffmpeg"):
     print "could not find ffmpeg, enter your password to install it"
@@ -35,7 +35,7 @@ else:
     windowpos=["0","0"]
     windowsize = [numre.search(i).group(1) for i in x.split("\n") if "Width" in i or "Height" in i]
 
-tmp = tempfile.mktemp()+".mkv"
+
 
 command = ["ffmpeg"]
 
@@ -57,6 +57,25 @@ if "--output" in sys.argv:
 else:
     output = subprocess.Popen("zenity --file-selection --save --title".split(" ")+["Select final output name prefix"], stdout=subprocess.PIPE).communicate()[0].strip()
 
+if "--temp" in sys.argv:
+    tempinp = sys.argv[sys.argv.index("--temp")+1]
+    if os.path.exists(tempinp):
+        if os.path.isdir(tempinp):
+            tmp = os.path.realpath(tempinp+"/temp.mkv")
+        else:
+            print "provided temp exists as file!! falling back to normal location"
+            tmp = tempfile.mktemp()+".mkv"
+    elif os.path.exists(os.path.dirname(tempinp)):
+        tmp = tempinp
+    else:
+        print "provided temp does not exist, falling back to default location"
+        tmp = tempfile.mktemp()+".mkv"
+else:
+    tmp = tempfile.mktemp()+".mkv"
+
+tmp = str(tmp)
+print tmp
+
 fps = 30
 if "--fps" in sys.argv:
     fps=int(sys.argv[sys.argv.index("--fps")+1])
@@ -76,7 +95,7 @@ if audio:
 command.extend("-vcodec libx264 -vpre lossless_ultrafast -threads 0".split(" "))
 
 command.append(tmp)
-
+time.sleep(1)
 ffcmd1 = subprocess.Popen(command, stdin=open("/dev/null")) #pipe from the bitbucket so we can keep control of console input
 zenitywaiter = subprocess.Popen(["zenity","--info","--text","Click OK to stop recording."]).wait()
 ffcmd1.terminate()
