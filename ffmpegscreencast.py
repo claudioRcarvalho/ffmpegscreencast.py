@@ -35,7 +35,9 @@ else:
     windowpos=["0","0"]
     windowsize = [numre.search(i).group(1) for i in x.split("\n") if "Width" in i or "Height" in i]
 
-
+for i in range(len(windowsize)):
+    if int(windowsize[i]) % 2 == 1:
+       windowsize[i] = str(int(windowsize[i]) + 1)
 
 command = ["ffmpeg"]
 
@@ -97,7 +99,7 @@ command.extend("-vcodec libx264 -vpre lossless_ultrafast -threads 0".split(" "))
 command.append(tmp)
 time.sleep(1)
 ffcmd1 = subprocess.Popen(command, stdin=open("/dev/null")) #pipe from the bitbucket so we can keep control of console input
-zenitywaiter = subprocess.Popen(["zenity","--info","--text","Click OK to stop recording."]).wait()
+zenitywaiter = subprocess.Popen(["zenity","--notification","--text","Click OK to stop recording."]).wait()
 ffcmd1.terminate()
 time.sleep(2)
 ffcmd1.kill()
@@ -111,7 +113,7 @@ command.extend("-vcodec libx264 -vpre slow -crf 22 -threads 0".split(" "))
 command.append(output+".mp4")
 
 ffcmd2 = subprocess.Popen(command, stdin=open("/dev/null")) #pipe from the bitbucket so we can keep control of console input
-zenitynotif = subprocess.Popen(["zenity","--notification","--text","Reencoding screencast..."])
+zenitynotif = subprocess.Popen(["zenity","--notification","--listen","--text","Reencoding screencast..."], stdin=subprocess.PIPE)
 ffcmd2.wait()
 zenitynotif.terminate()
 time.sleep(0.01)
